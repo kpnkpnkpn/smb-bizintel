@@ -1,7 +1,17 @@
 import { useEffect, useState } from 'react';
 import type { Business } from '../../../packages/shared-types';
 
-export function BusinessTable() {
+interface BusinessTableProps {
+  filters: {
+    name: string;
+    city: string;
+    starRating: number | null;
+    naicsCode: string;
+    yearStarted: number | null;
+  };
+}
+
+export function BusinessTable({ filters }: BusinessTableProps) {
   const [businesses, setBusinesses] = useState<Business[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -11,22 +21,31 @@ export function BusinessTable() {
       setLoading(true);
       setError(null);
       try {
-        const res = await fetch('/api/businesses');
+        const params = new URLSearchParams();
+        if (filters.name) params.append('name', filters.name);
+        if (filters.city) params.append('city', filters.city);
+        if (filters.starRating !== null) params.append('starRating', String(filters.starRating));
+        if (filters.naicsCode) params.append('naicsCode', filters.naicsCode);
+        if (filters.yearStarted !== null) params.append('yearStarted', String(filters.yearStarted));
+        const query = params.toString();
+        const res = await fetch(`/api/businesses${query ? `?${query}` : ''}`);
         if (!res.ok) {
           const err = await res.json();
           throw new Error(err?.detail?.message || 'Failed to fetch businesses');
         }
         const data = await res.json();
         setBusinesses(data);
-      } catch (e: any) {
-        setError(e.message || 'Unknown error');
+      } catch (e: unknown) {
+        let message = 'Unknown error';
+        if (e instanceof Error) message = e.message;
+        setError(message);
         setBusinesses(null);
       } finally {
         setLoading(false);
       }
     }
     fetchBusinesses();
-  }, []);
+  }, [filters]);
 
   if (loading) return <div role="status">Loading...</div>;
   if (error) return <div role="alert">Error: {error}</div>;

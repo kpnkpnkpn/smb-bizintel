@@ -1,4 +1,6 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import React from 'react';
+import { render as rtlRender, screen, waitFor } from '@testing-library/react';
+import { MantineProvider } from '@mantine/core';
 import { BusinessTable } from '../BusinessTable';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 
@@ -24,6 +26,10 @@ const mockBusinesses = [
   },
 ];
 
+function render(ui) {
+  return rtlRender(<MantineProvider>{ui}</MantineProvider>);
+}
+
 describe('BusinessTable', () => {
   beforeEach(() => {
     vi.resetAllMocks();
@@ -31,7 +37,7 @@ describe('BusinessTable', () => {
 
   it('shows loading indicator', () => {
     vi.spyOn(global, 'fetch').mockImplementation(() => new Promise(() => {}));
-    render(<BusinessTable />);
+    render(<BusinessTable filters={{ name: '', city: '', starRating: null, naicsCode: '', yearStarted: null }} />);
     expect(screen.getByRole('status')).toHaveTextContent(/loading/i);
   });
 
@@ -39,8 +45,8 @@ describe('BusinessTable', () => {
     vi.spyOn(global, 'fetch').mockResolvedValue({
       ok: true,
       json: async () => mockBusinesses,
-    } as any);
-    render(<BusinessTable />);
+    } as unknown as Response);
+    render(<BusinessTable filters={{ name: '', city: '', starRating: null, naicsCode: '', yearStarted: null }} />);
     await waitFor(() => expect(screen.getByText('Test Biz')).toBeInTheDocument());
     expect(screen.getByText('123 Main St')).toBeInTheDocument();
     expect(screen.getByText('Alice')).toBeInTheDocument();
@@ -50,8 +56,8 @@ describe('BusinessTable', () => {
     vi.spyOn(global, 'fetch').mockResolvedValue({
       ok: true,
       json: async () => [],
-    } as any);
-    render(<BusinessTable />);
+    } as unknown as Response);
+    render(<BusinessTable filters={{ name: '', city: '', starRating: null, naicsCode: '', yearStarted: null }} />);
     await waitFor(() => expect(screen.getByText(/no businesses/i)).toBeInTheDocument());
   });
 
@@ -59,14 +65,14 @@ describe('BusinessTable', () => {
     vi.spyOn(global, 'fetch').mockResolvedValue({
       ok: false,
       json: async () => ({ detail: { message: 'API fail' } }),
-    } as any);
-    render(<BusinessTable />);
+    } as unknown as Response);
+    render(<BusinessTable filters={{ name: '', city: '', starRating: null, naicsCode: '', yearStarted: null }} />);
     await waitFor(() => expect(screen.getByRole('alert')).toHaveTextContent(/api fail/i));
   });
 
   it('shows error message on network error', async () => {
     vi.spyOn(global, 'fetch').mockRejectedValue(new Error('Network down'));
-    render(<BusinessTable />);
+    render(<BusinessTable filters={{ name: '', city: '', starRating: null, naicsCode: '', yearStarted: null }} />);
     await waitFor(() => {
       const alerts = screen.getAllByRole('alert');
       expect(alerts.some(a => a.textContent?.toLowerCase().includes('network down'))).toBe(true);
