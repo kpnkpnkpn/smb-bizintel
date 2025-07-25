@@ -3,8 +3,8 @@ import App from '../App';
 import { describe, it, expect } from 'vitest';
 
 describe('App', () => {
-  it('renders Vite + React heading', () => {
+  it('renders Business Directory heading', () => {
     render(<App />);
-    expect(screen.getByText(/Vite \+ React/i)).toBeInTheDocument();
+    expect(screen.getByText(/Business Directory/i)).toBeInTheDocument();
   });
 }); 
