@@ -6,7 +6,13 @@ import { useState } from 'react';
 
 function App() {
   const filterState = useFilterStore();
-  const [appliedFilters, setAppliedFilters] = useState({
+  const [appliedFilters, setAppliedFilters] = useState<{
+    name: string;
+    city: string;
+    starRating: number | null;
+    naicsCode: string;
+    yearStarted: number | null;
+  }>({
     name: '',
     city: '',
     starRating: null,

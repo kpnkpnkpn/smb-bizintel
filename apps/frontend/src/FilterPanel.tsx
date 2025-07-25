@@ -25,7 +25,7 @@ export function FilterPanel({ onApply }: { onApply?: () => void }) {
         setCityOptions(data.map((c: string) => ({ value: c, label: c })));
         setLoadingCities(false);
       })
-      .catch(e => {
+      .catch(() => {
         setErrorCities('Failed to load cities');
         setLoadingCities(false);
       });
@@ -37,7 +37,7 @@ export function FilterPanel({ onApply }: { onApply?: () => void }) {
         setNaicsOptions(data.map((n: { code: string; description: string }) => ({ value: n.code, label: `${n.code} - ${n.description}` })));
         setLoadingNaics(false);
       })
-      .catch(e => {
+      .catch(() => {
         setErrorNaics('Failed to load NAICS codes');
         setLoadingNaics(false);
       });
@@ -93,10 +93,9 @@ export function FilterPanel({ onApply }: { onApply?: () => void }) {
           min={0}
           max={5}
           step={0.1}
-          precision={1}
           aria-label="Star Rating"
           data-testid="filter-star-rating"
-          value={starRating}
+          value={starRating ?? undefined}
           onChange={v => setStarRating(typeof v === 'number' ? v : null)}
         />
         <Select
@@ -119,7 +118,7 @@ export function FilterPanel({ onApply }: { onApply?: () => void }) {
           step={1}
           aria-label="Year Started"
           data-testid="filter-year-started"
-          value={yearStarted}
+          value={yearStarted ?? undefined}
           onChange={v => setYearStarted(typeof v === 'number' ? v : null)}
         />
         <Group justify="flex-end" mt="md">
