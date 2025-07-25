@@ -67,3 +67,13 @@ export default tseslint.config([
   },
 ])
 ```
+
+## Testing and Production Build Separation
+
+- **Test dependencies**: The following packages are required for running tests and should be installed as devDependencies:
+  - `@testing-library/react`
+  - `vitest`
+  - `@types/testing-library__react`
+- **Test files**: All test files are located in `src/__tests__/` and are excluded from the production build via `tsconfig.app.json`.
+- **Production build**: The production build (`npm run build`) does not require test dependencies and will not compile or include test files.
+- **CI/CD**: Ensure that test dependencies are installed for test runs, but they are not required for production deployments.
